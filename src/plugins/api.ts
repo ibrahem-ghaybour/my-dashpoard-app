@@ -1,6 +1,6 @@
 // src/plugins/api.ts
 import { ofetch, type $Fetch, type FetchOptions } from "ofetch";
-import type { App, Plugin, InjectionKey } from "vue";
+import { type App, type Plugin, inject } from "vue";
 import { useAuthStore } from "@/stores/auth";
 
 export interface ApiPluginOptions {
@@ -10,7 +10,7 @@ export interface ApiPluginOptions {
 }
 
 const RETRY_KEY = Symbol("retry");
-const ApiKey = Symbol("api") as InjectionKey<$Fetch>;
+const ApiKey = Symbol("api") 
 
 const withAuthHeader = (headers: FetchOptions["headers"], token: string) => {
   const h: Record<string, string> = {};
@@ -81,7 +81,7 @@ export const createApiPlugin = (opts: ApiPluginOptions): Plugin => {
               (options as any).headers = withAuthHeader(options.headers, newToken);
               return api(request as any, options as any);
             } catch (e) {
-              auth.logout();
+              // auth.logout();
               return Promise.reject(e);
             }
           }
@@ -116,7 +116,7 @@ export const createApiPlugin = (opts: ApiPluginOptions): Plugin => {
           processQueue(null, newToken);
           return newToken;
         } catch (err) {
-          processQueue(err, null);
+          // processQueue(err, null);
           auth.logout();
           throw err;
         } finally {

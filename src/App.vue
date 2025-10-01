@@ -1,11 +1,12 @@
 <template>
   <div>
       <router-view />
+      <Toaster/>
   </div>
 </template>
 
 <script lang="ts" setup>
-// import layouts from "~/layouts/defaults.vue";
+import { Toaster } from 'vue-sonner'
 </script>
 
 <style></style>

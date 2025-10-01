@@ -10,10 +10,11 @@ import type {
   RegisterPayload,
   User,
 } from "@/types/user";
+import { useApi } from "~/plugins/api";
 
 export const useAuthStore = defineStore("auth", () => {
   const cookies = useCookies();
-
+  const api = useApi()
   // —— الحالة ——
   const accessToken = ref<string | null>(cookies.get("access_token") ?? null);
   const currentUser = ref<User | null>(null);
@@ -32,7 +33,7 @@ export const useAuthStore = defineStore("auth", () => {
       currentUser.value = null;
       return null;
     }
-    const { user: me } = await (window as any).$api<{ user: User }>(
+    const { user: me } = await api<{ user: User }>(
       "/auth/me",
       {
         method: "GET",
@@ -46,7 +47,7 @@ export const useAuthStore = defineStore("auth", () => {
   const login = async (payload: LoginPayload) => {
     loading.value = true;
     try {
-      const res = await (window as any).$api<LoginResponse>("/auth/login", {
+      const res = await api<LoginResponse>("/auth/login", {
         method: "POST",
         body: payload,
         credentials: "include",
@@ -63,7 +64,7 @@ export const useAuthStore = defineStore("auth", () => {
   const register = async (payload: RegisterPayload) => {
     loading.value = true;
     try {
-      const res = await (window as any).$api<LoginResponse>("/auth/register", {
+      const res = await api<LoginResponse>("/auth/register", {
         method: "POST",
         body: payload,
         credentials: "include",
@@ -79,7 +80,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const logout = async () => {
     try {
-      await (window as any).$api("/auth/logout", {
+      await api("/auth/logout", {
         method: "POST",
         credentials: "include",
       } as FetchOptions);
