@@ -19,7 +19,7 @@
   display: block;
   width: var(--dot-size);
   height: var(--dot-size);
-  background-color: var(--color-primary);
+  background-color: var(--ring);
   border-radius: 50%;
   position: absolute;
   transform: translate(-50%, -50%);

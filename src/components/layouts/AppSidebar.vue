@@ -26,10 +26,12 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import { useAuthStore } from '~/stores/auth'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 })
+const authStore = useAuthStore();
 
 // This is sample data.
 const data = {
@@ -221,7 +223,7 @@ const data = {
       <NavProjects :projects="data.projects" />
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="data.user" />
+      <NavUser :user="authStore.currentUser" />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

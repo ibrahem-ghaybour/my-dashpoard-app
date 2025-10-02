@@ -1,10 +1,13 @@
 export interface Auth {
+  status:"active" | "inactive" | "pending",
+  isActive:boolean
   avatar: string;
   _id: string;
   name: string;
   email: string;
   role: string;
   createdAt: string;
+  updatedAt: string
 }
 
 export interface LoginPayload {

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue";
+import { defineAsyncComponent, type HTMLAttributes } from "vue";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "vee-validate";
+import { useToastTheme } from "~/composable/useToastTheme";
 import { z } from "zod";
 // import { useToastTheme } from "~/composable/useToastTheme";
 import {
@@ -15,8 +16,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Schema } from "~/composable/useSchema";
-import { useApi } from "@/plugins/api";
-const api = useApi();
+import { useAuthStore } from "~/stores/auth";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const Spinner = defineAsyncComponent(() => import("~/components/Spinner.vue"));
+const authStore = useAuthStore();
+const { login } = authStore;
 const formSchema = Schema({
   email: z.string().email("Invalid email"),
   password: z
@@ -29,10 +34,9 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-  api("/auth/login", {
-    body: values,
-    method:"POST"
-  });
+  await login(values);
+  useToastTheme.success("Login successfully.");
+  router.push('/')
 });
 
 const props = defineProps<{
@@ -79,7 +83,10 @@ const props = defineProps<{
           <FormMessage />
         </FormItem>
       </FormField>
-      <Button type="submit" class-name="w-full"> Login </Button>
+      <Button type="submit" :disabled="authStore.loading" class-name="w-full">
+        <span v-if="authStore.loading"><Spinner /></span>
+        <span v-else>Login</span>
+      </Button>
       <div
         class="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t"
       >
