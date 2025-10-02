@@ -140,7 +140,7 @@ export const createApiPlugin = (opts: ApiPluginOptions): Plugin => {
           processQueue(null, newToken);
           return newToken;
         } catch (err) {
-          // processQueue(err, null);
+          processQueue(err, null);
           auth.logout();
           throw err;
         } finally {
