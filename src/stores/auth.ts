@@ -35,6 +35,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     const { user: me } = await api<{ user: User }>("/auth/me", {
       method: "GET",
+      noAuth:false
     } as FetchOptions<"json", any>);
     currentUser.value = me;
     return me;
