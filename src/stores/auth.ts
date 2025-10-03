@@ -28,14 +28,9 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const fetchMe = async () => {
-    if (!accessToken.value) {
-      currentUser.value = null;
-      return null;
-    }
-
     const { user: me } = await api<{ user: User }>("/auth/me", {
       method: "GET",
-      noAuth:false
+      noAuth: false,
     } as FetchOptions<"json", any>);
     currentUser.value = me;
     return me;
@@ -85,7 +80,6 @@ export const useAuthStore = defineStore("auth", () => {
       loading.value = true;
       await api("/auth/logout", {
         method: "POST",
-        credentials: "include",
       } as FetchOptions);
       setAccessToken(null);
       currentUser.value = null;

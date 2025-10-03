@@ -14,7 +14,6 @@ import Container from "~/components/layouts/Container.vue";
 const authStore = useAuthStore();
 onMounted(async() => {
   authStore.fetchMe();
-  console.log('dlkjaslkdjflkadsfdsda')
 });
 </script>
 
