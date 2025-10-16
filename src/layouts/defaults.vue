@@ -1,7 +1,7 @@
 <template>
   <SidebarProvider>
     <AppSidebar />
-    <Container><router-view /></Container>
+    <Container ><router-view /></Container>
   </SidebarProvider>
 </template>
 

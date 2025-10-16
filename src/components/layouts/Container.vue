@@ -1,5 +1,5 @@
 <template>
-  <div class="container-app">
+  <div class="container-app mx-auto max-sm:p-2">
     <slot></slot>
   </div>
 </template>
@@ -12,7 +12,7 @@
 .container-app {
     width: 100%;
     @media (width >= 40rem /* 640px */) {
-        padding: 1rem;
+        padding: 1rem !important;
     }
     @media (width >= 48rem /* 768px */) {
         padding: 1.5rem;
