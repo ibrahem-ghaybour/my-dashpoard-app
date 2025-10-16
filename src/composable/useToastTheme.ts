@@ -18,11 +18,17 @@ function themedToast(
     action?: { label: string; onClick: () => void };
   }
 ) {
-  toast[variant as string](message, {
+  const toastOptions = {
     description: opts?.description,
     action: opts?.action,
     class: variants[variant],
-  });
+  };
+
+  if (variant === "default") {
+    toast(message, toastOptions);
+  } else {
+    toast[variant](message, toastOptions);
+  }
 }
 
 export const useToastTheme = {
