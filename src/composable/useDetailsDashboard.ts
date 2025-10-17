@@ -17,16 +17,16 @@ export function useDetailsDashboard() {
   const loading = ref(false);
   const currentStats = ref<CurrentStats | null>(null);
   const previousStats = ref<PreviousStats | null>(null);
-  const error = ref<string | null>(null);
+  const error = ref<string | undefined>(undefined);
 
-  const dateStart = ref<string | null>(null);
-  const dateEnd = ref<string | null>(null);
+  const dateStart = ref<string | undefined>(undefined);
+  const dateEnd = ref<string | undefined>(undefined);
 
   const limit = ref(10);
   const api = useApi();
   const fetchDataDashboard = async () => {
     loading.value = true;
-    error.value = null;
+    error.value = undefined;
     try {
       const response = await api<DashboardResponse>("/stats/dashboard", {
         method: "GET",
