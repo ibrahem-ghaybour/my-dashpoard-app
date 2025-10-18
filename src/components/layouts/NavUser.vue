@@ -30,13 +30,24 @@ const DropdownMenuSub = defineAsyncComponent(
   () => import("@/components/section/DropdownMenuSub.vue")
 );
 import { useThemeStore } from "~/stores/theme";
+import { useAuthStore } from "~/stores/auth";
+import { useRouter } from "vue-router";
 import { type Auth } from "~/types/user";
+
 const props = defineProps<{
   user: Auth;
 }>();
+
 const themeStore = useThemeStore();
+const authStore = useAuthStore();
+const router = useRouter();
 const { toggleTheme } = themeStore;
 const { isMobile } = useSidebar();
+
+const handleLogout = async () => {
+  await authStore.logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -101,7 +112,7 @@ const { isMobile } = useSidebar();
             />
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem @click="handleLogout">
             <LogOut />
             Log out
           </DropdownMenuItem>
