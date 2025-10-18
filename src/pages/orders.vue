@@ -17,7 +17,7 @@ import {
 } from "@tanstack/vue-table"
 import { ArrowUpDown, ChevronDown } from "lucide-vue-next"
 
-import { h, ref } from "vue"
+import { h, onMounted, ref } from "vue"
 import { valueUpdater } from "@/components/ui/table/utils"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -37,7 +37,10 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import DropdownAction from "~/components/section/DataTableDemoColumn.vue"
-
+import { useOrders } from "~/composable/useOrders"
+onMounted(() => {
+  useOrders().fetchData()
+})
 export interface Payment {
   id: string
   amount: number
