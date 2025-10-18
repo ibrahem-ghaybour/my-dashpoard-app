@@ -35,13 +35,14 @@ export interface OrderData {
   items: OrderItem[];
   totalAmount: number;
   currency: string;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
-  notes: string;
+  status?: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  notes?: string;
   isActive: boolean;
-  shippingAddress: ShippingAddress;
+  shippingAddress?: ShippingAddress;
   createdAt: string;
   updatedAt: string;
-  orderCode: string;
+  orderCode?: string;
+  __v?: number;
 }
 import type { Pagination } from "@/types/pagination";
 export interface OrderResponse {

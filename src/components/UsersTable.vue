@@ -2,21 +2,19 @@
 import type {
   ColumnDef,
   ColumnFiltersState,
-  ExpandedState,
   SortingState,
   VisibilityState,
 } from "@tanstack/vue-table";
 import {
   FlexRender,
   getCoreRowModel,
-  getExpandedRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   useVueTable,
 } from "@tanstack/vue-table";
-import { ArrowUpDown, ChevronDown } from "lucide-vue-next";
+import { ArrowUpDown, ChevronDown, Eye, Pencil } from "lucide-vue-next";
 
-import { h, ref, computed as comp } from "vue";
+import { h, ref, computed } from "vue";
 import { valueUpdater } from "@/components/ui/table/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,20 +36,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import PaginationComponent from "~/components/Pagination.vue";
-import DropdownAction from "~/components/section/DataTableDemoColumn.vue";
-import type { OrderData } from "~/types/orders";
+import type { User } from "~/types/user";
 import type { Pagination as PaginationType } from "~/types/pagination";
-import { computed } from "vue";
+import { useRouter } from "vue-router";
 
 interface Props {
-  data: OrderData[];
+  data: User[];
   pagination: PaginationType;
   loading?: boolean;
 }
 
 const props = defineProps<Props>();
+const router = useRouter();
 
-const columns: ColumnDef<OrderData>[] = [
+const columns: ColumnDef<User>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -73,18 +71,7 @@ const columns: ColumnDef<OrderData>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "orderCode",
-    header: "Order Code",
-    cell: ({ row }) =>
-      h(
-        "div",
-        { class: "font-mono text-sm font-medium" },
-        row.original.orderCode || row.original._id.slice(-8).toUpperCase()
-      ),
-  },
-  {
-    accessorKey: "user.name",
-    id: "userName",
+    accessorKey: "name",
     header: ({ column }) => {
       return h(
         Button,
@@ -92,72 +79,81 @@ const columns: ColumnDef<OrderData>[] = [
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["User Name", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+        () => ["Name", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
     cell: ({ row }) => {
-      const user = row.original.user;
-      return h("div", { class: "font-medium text-sm" }, user.name);
+      const user = row.original;
+      return h("div", { class: "flex items-center gap-2" }, [
+        user.avatar
+          ? h("img", {
+              src: user.avatar,
+              alt: user.name,
+              class: "w-8 h-8 rounded-full object-cover",
+            })
+          : h(
+              "div",
+              {
+                class:
+                  "w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold",
+              },
+              user.name.charAt(0).toUpperCase()
+            ),
+        h("span", { class: "font-medium" }, user.name),
+      ]);
     },
   },
   {
-    accessorKey: "user.email",
-    id: "userEmail",
+    accessorKey: "email",
     header: "Email",
     cell: ({ row }) => {
-      const user = row.original.user;
-      return h("div", { class: "text-sm text-muted-foreground" }, user.email);
+      return h("div", { class: "text-sm" }, row.getValue("email"));
     },
   },
   {
-    accessorKey: "user.role",
-    id: "role",
+    accessorKey: "phone",
+    header: "Phone",
+    cell: ({ row }) => {
+      const phone = row.getValue("phone") as string;
+      return h(
+        "div",
+        { class: "text-sm text-muted-foreground" },
+        phone || "N/A"
+      );
+    },
+  },
+  {
+    accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
-      const user = row.original.user;
+      const role = row.getValue("role") as string;
       const roleColors = {
         admin: "bg-red-500/10 text-red-500 border-red-500/20",
         manager: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-        user: "bg-gray-500/10 text-gray-500 border-gray-500/20",
+        user: "bg-green-500/10 text-green-500 border-green-500/20",
+        customer: "bg-purple-500/10 text-purple-500 border-purple-500/20",
       };
       return h(
         "div",
         {
           class: `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border capitalize ${
-            roleColors[user.role as keyof typeof roleColors] ||
+            roleColors[role as keyof typeof roleColors] ||
             "bg-gray-500/10 text-gray-500 border-gray-500/20"
           }`,
         },
-        user.role
+        role
       );
-    },
-  },
-  {
-    accessorKey: "totalAmount",
-    header: () => h("div", { class: "text-right" }, "Total Amount"),
-    cell: ({ row }) => {
-      const amount = row.getValue("totalAmount") as number;
-      const currency = row.original.currency;
-
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: currency || "USD",
-      }).format(amount);
-
-      return h("div", { class: "text-right font-medium" }, formatted);
     },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = (row.getValue("status") as string) || "pending";
+      const status = row.getValue("status") as string;
       const statusColors = {
+        active: "bg-green-500/10 text-green-500 border-green-500/20",
+        inactive: "bg-gray-500/10 text-gray-500 border-gray-500/20",
         pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-        processing: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-        shipped: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-        delivered: "bg-green-500/10 text-green-500 border-green-500/20",
-        cancelled: "bg-red-500/10 text-red-500 border-red-500/20",
       };
       return h(
         "div",
@@ -175,25 +171,27 @@ const columns: ColumnDef<OrderData>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
-
-      return h(
-        "div",
-        { class: "relative" },
-        h(DropdownAction, {
-          payment: { id: payment._id },
-          actions: [
-            {
-              label: "Copy Order ID",
-              action: () => navigator.clipboard.writeText(payment.orderCode || payment._id),
-            },
-            {
-              label: "View Details",
-              action: () => row.toggleExpanded(),
-            },
-          ],
-        })
-      );
+      const user = row.original;
+      return h("div", { class: "flex gap-2" }, [
+        h(
+          Button,
+          {
+            variant: "ghost",
+            size: "sm",
+            onClick: () => router.push(`/users/${user._id}`),
+          },
+          () => [h(Eye, { class: "h-4 w-4" })]
+        ),
+        h(
+          Button,
+          {
+            variant: "ghost",
+            size: "sm",
+            onClick: () => router.push(`/users/${user._id}/edit`),
+          },
+          () => [h(Pencil, { class: "h-4 w-4" })]
+        ),
+      ]);
     },
   },
 ];
@@ -202,7 +200,6 @@ const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
 const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
-const expanded = ref<ExpandedState>({});
 
 const table = useVueTable({
   get data() {
@@ -212,7 +209,6 @@ const table = useVueTable({
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
-  getExpandedRowModel: getExpandedRowModel(),
   manualPagination: true,
   pageCount: computed(() => props.pagination.pages).value,
   onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
@@ -222,7 +218,6 @@ const table = useVueTable({
     valueUpdater(updaterOrValue, columnVisibility),
   onRowSelectionChange: (updaterOrValue) =>
     valueUpdater(updaterOrValue, rowSelection),
-  onExpandedChange: (updaterOrValue) => valueUpdater(updaterOrValue, expanded),
   state: {
     get sorting() {
       return sorting.value;
@@ -236,9 +231,6 @@ const table = useVueTable({
     get rowSelection() {
       return rowSelection.value;
     },
-    get expanded() {
-      return expanded.value;
-    },
   },
 });
 
@@ -247,54 +239,38 @@ const totalPages = computed(() => props.pagination.pages);
 const pageSize = computed(() => props.pagination.limit);
 const totalItems = computed(() => props.pagination.total);
 
-const searchType = ref<"name" | "email" | "id">("name");
+const searchType = ref<"name" | "email">("name");
 const searchValue = ref("");
 
 const handleSearchChange = (value: string) => {
   searchValue.value = value;
-  // Clear all search filters first
-  table.getColumn("userName")?.setFilterValue(undefined);
-  table.getColumn("userEmail")?.setFilterValue(undefined);
-  table.getColumn("orderCode")?.setFilterValue(undefined);
-  
-  // Set filter on the appropriate column based on search type
+  table.getColumn("name")?.setFilterValue(undefined);
+  table.getColumn("email")?.setFilterValue(undefined);
+
   if (value) {
     if (searchType.value === "name") {
-      table.getColumn("userName")?.setFilterValue(value);
+      table.getColumn("name")?.setFilterValue(value);
     } else if (searchType.value === "email") {
-      table.getColumn("userEmail")?.setFilterValue(value);
-    } else if (searchType.value === "id") {
-      table.getColumn("orderCode")?.setFilterValue(value);
+      table.getColumn("email")?.setFilterValue(value);
     }
   }
 };
 
-const handleSearchTypeChange = (type: "name" | "email" | "id") => {
+const handleSearchTypeChange = (type: "name" | "email") => {
   searchType.value = type;
-  // Reapply the current search value with the new type
   handleSearchChange(searchValue.value);
-};
-
-const handleBulkStatusUpdate = (status: string) => {
-  const selectedRows = table.getFilteredSelectedRowModel().rows;
-  const selectedIds = selectedRows.map((row) => row.original._id);
-  emit("bulk-update", { ids: selectedIds, status });
-  // Clear selection after emitting the event
-  table.resetRowSelection();
 };
 
 const handleBulkDelete = () => {
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedIds = selectedRows.map((row) => row.original._id);
   emit("bulk-delete", selectedIds);
-  // Clear selection after emitting the event
   table.resetRowSelection();
 };
 
 const emit = defineEmits<{
   "update:page": [page: number];
   "update:limit": [limit: number];
-  "bulk-update": [payload: { ids: string[]; status: string }];
   "bulk-delete": [ids: string[]];
 }>();
 </script>
@@ -306,34 +282,30 @@ const emit = defineEmits<{
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="w-32">
-              {{ searchType === 'name' ? 'Name' : searchType === 'email' ? 'Email' : 'Order ID' }}
+              {{ searchType === "name" ? "Name" : "Email" }}
               <ChevronDown class="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            <DropdownMenuItem 
+            <DropdownMenuItem
               @click="handleSearchTypeChange('name')"
               :class="{ 'bg-accent': searchType === 'name' }"
             >
               Search by Name
             </DropdownMenuItem>
-            <DropdownMenuItem 
+            <DropdownMenuItem
               @click="handleSearchTypeChange('email')"
               :class="{ 'bg-accent': searchType === 'email' }"
             >
               Search by Email
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              @click="handleSearchTypeChange('id')"
-              :class="{ 'bg-accent': searchType === 'id' }"
-            >
-              Search by Order ID
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Input
           class="flex-1"
-          :placeholder="`Filter by ${searchType === 'name' ? 'name' : searchType === 'email' ? 'email' : 'order ID'}...`"
+          :placeholder="`Filter by ${
+            searchType === 'name' ? 'name' : 'email'
+          }...`"
           :model-value="searchValue"
           @update:model-value="handleSearchChange"
         />
@@ -351,30 +323,11 @@ const emit = defineEmits<{
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            <DropdownMenuItem @click="handleBulkStatusUpdate('pending')">
-              Mark as Pending
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="handleBulkStatusUpdate('processing')">
-              Mark as Processing
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="handleBulkStatusUpdate('shipped')">
-              Mark as Shipped
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="handleBulkStatusUpdate('delivered')">
-              Mark as Delivered
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              @click="handleBulkStatusUpdate('cancelled')"
-              class="text-destructive"
-            >
-              Mark as Cancelled
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               @click="handleBulkDelete"
               class="text-destructive font-semibold"
             >
-              Delete Selected Orders
+              Delete Selected Users
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -460,111 +413,18 @@ const emit = defineEmits<{
         </TableHeader>
         <TableBody>
           <template v-if="table.getRowModel().rows?.length">
-            <template v-for="row in table.getRowModel().rows" :key="row.id">
-              <TableRow :data-state="row.getIsSelected() && 'selected'">
-                <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                  <FlexRender
-                    :render="cell.column.columnDef.cell"
-                    :props="cell.getContext()"
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow v-if="row.getIsExpanded()" class="bg-muted/50">
-                <TableCell :colspan="row.getAllCells().length" class="p-4">
-                  <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <h4 class="font-semibold mb-2">Order Details</h4>
-                      <div class="space-y-1 text-muted-foreground">
-                        <p>
-                          <span class="font-medium text-foreground"
-                            >Order ID:</span
-                          >
-                          {{ row.original._id }}
-                        </p>
-                        <p>
-                          <span class="font-medium text-foreground"
-                            >Currency:</span
-                          >
-                          {{ row.original.currency }}
-                        </p>
-                        <p>
-                          <span class="font-medium text-foreground"
-                            >Created:</span
-                          >
-                          {{
-                            new Date(row.original.createdAt).toLocaleString()
-                          }}
-                        </p>
-                        <p v-if="row.original.notes">
-                          <span class="font-medium text-foreground"
-                            >Notes:</span
-                          >
-                          {{ row.original.notes }}
-                        </p>
-                      </div>
-                    </div>
-                    <div v-if="row.original.shippingAddress">
-                      <h4 class="font-semibold mb-2">Shipping Address</h4>
-                      <div class="space-y-1 text-muted-foreground">
-                        <p class="font-medium text-foreground">
-                          {{ row.original.shippingAddress.fullName }}
-                        </p>
-                        <p>{{ row.original.shippingAddress.phone }}</p>
-                        <p>{{ row.original.shippingAddress.line1 }}</p>
-                        <p v-if="row.original.shippingAddress.line2">
-                          {{ row.original.shippingAddress.line2 }}
-                        </p>
-                        <p>
-                          {{ row.original.shippingAddress.city }},
-                          {{ row.original.shippingAddress.governorate }}
-                        </p>
-                        <p>
-                          {{ row.original.shippingAddress.postalCode }},
-                          {{ row.original.shippingAddress.country }}
-                        </p>
-                      </div>
-                    </div>
-                    <div v-else>
-                      <h4 class="font-semibold mb-2">Shipping Address</h4>
-                      <p class="text-sm text-muted-foreground">No shipping address provided</p>
-                    </div>
-                    <div class="col-span-2">
-                      <h4 class="font-semibold mb-2">
-                        Order Items ({{ row.original.items.length }})
-                      </h4>
-                      <div class="space-y-2">
-                        <div
-                          v-for="item in row.original.items"
-                          :key="item.product._id"
-                          class="flex justify-between items-center p-2 bg-background rounded border"
-                        >
-                          <div>
-                            <p class="font-medium">{{ item.name }}</p>
-                            <p class="text-xs text-muted-foreground">
-                              Quantity: {{ item.quantity }} ×
-                              {{
-                                new Intl.NumberFormat("en-US", {
-                                  style: "currency",
-                                  currency: row.original.currency,
-                                }).format(item.price)
-                              }}
-                            </p>
-                          </div>
-                          <p class="font-medium">
-                            {{
-                              new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: row.original.currency,
-                              }).format(item.subtotal)
-                            }}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </template>
+            <TableRow
+              v-for="row in table.getRowModel().rows"
+              :key="row.id"
+              :data-state="row.getIsSelected() && 'selected'"
+            >
+              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                <FlexRender
+                  :render="cell.column.columnDef.cell"
+                  :props="cell.getContext()"
+                />
+              </TableCell>
+            </TableRow>
           </template>
 
           <TableRow v-else>

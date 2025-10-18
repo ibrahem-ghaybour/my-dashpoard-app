@@ -72,12 +72,8 @@ const data = {
         },
         {
           title: "Carts",
-          url: "#",
-        },
-        {
-          title: "Refunds",
-          url: "#",
-        },
+          url: "/carts",
+        }
       ],
     },
     {
@@ -106,7 +102,7 @@ const data = {
       items: [
         {
           title: "Users",
-          url: "#",
+          url: "/users",
         },
         {
           title: "Wishlist",

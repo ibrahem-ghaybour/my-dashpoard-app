@@ -20,7 +20,7 @@ export interface RecentSale {
   user: SaleUser;
   totalAmount: number;
   currency: string;
-  status: "pending" | "completed" | "failed" | string; // ممكن تضيف باقي الحالات
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "completed" | "failed";
   createdAt: string; // ISO date string
 }
 

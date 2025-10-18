@@ -25,10 +25,14 @@ export interface LoginResponse {
 }
 
 export interface User extends Auth {
+  phone: string;
+  gender?: "male" | "female";
+  birthdate?: string;
   status: "active" | "inactive" | "pending";
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
+  __v?: number;
 }
 
 export interface Pagination {
