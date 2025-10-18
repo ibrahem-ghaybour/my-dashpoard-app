@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useProducts } from "~/composable/useProducts";
+import { useCategories } from "~/composable/useCategories";
 import ProductsTable from "~/components/ProductsTable.vue";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, TrendingUp, ShoppingCart, DollarSign, Trash2, Plus } from "lucide-vue-next";
@@ -17,9 +18,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const router = useRouter();
 const { productList, fetchData, pagination, goToPage, loading, limitSize, selectedProduct, getProductById, createProduct, updateProduct, deleteProduct, deleteProducts } = useProducts();
+const { categoryList, fetchData: fetchCategories } = useCategories();
 
 const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
@@ -48,6 +57,7 @@ const editForm = ref({
 
 onMounted(() => {
   fetchData();
+  fetchCategories();
 });
 
 const handlePageUpdate = (newPage: number) => {
@@ -88,7 +98,7 @@ const handleEdit = async (id: string) => {
   await getProductById(id);
   if (selectedProduct.value) {
     const category = typeof selectedProduct.value.category === 'object' 
-      ? selectedProduct.value.category.name 
+      ? selectedProduct.value.category._id 
       : selectedProduct.value.category;
     
     editForm.value = {
@@ -273,7 +283,20 @@ const formatPrice = (price: number) => {
           </div>
           <div class="grid gap-2">
             <Label for="create-category">Category *</Label>
-            <Input id="create-category" v-model="createForm.category" placeholder="Enter category" />
+            <Select v-model="createForm.category">
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem 
+                  v-for="category in categoryList" 
+                  :key="category._id" 
+                  :value="category._id"
+                >
+                  {{ category.name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <DialogFooter>
@@ -318,7 +341,20 @@ const formatPrice = (price: number) => {
           </div>
           <div class="grid gap-2">
             <Label for="category">Category</Label>
-            <Input id="category" v-model="editForm.category" />
+            <Select v-model="editForm.category">
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem 
+                  v-for="category in categoryList" 
+                  :key="category._id" 
+                  :value="category._id"
+                >
+                  {{ category.name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <DialogFooter>

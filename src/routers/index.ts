@@ -17,6 +17,7 @@ const routes = [
         { path: 'wishlist/:userId', name: 'wishlist-details', component: () => import('~/pages/wishlist/[userId].vue') },
         { path: 'products', name: 'products', component: () => import('~/pages/products/index.vue') },
         { path: 'products/:id', name: 'product-details', component: () => import('~/pages/products/[id].vue') },
+        { path: 'categories', name: 'categories', component: () => import('~/pages/categories/index.vue') },
       ],
     },
     {
