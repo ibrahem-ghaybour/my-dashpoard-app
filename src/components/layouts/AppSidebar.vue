@@ -27,6 +27,8 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { useAuthStore } from '~/stores/auth'
+import SidebarMenuItem from '../ui/sidebar/SidebarMenuItem.vue'
+import SidebarMenuButton from '../ui/sidebar/SidebarMenuButton.vue'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
@@ -219,7 +221,18 @@ const data = {
       <TeamSwitcher :teams="data.teams" />
     </SidebarHeader>
     <SidebarContent>
-      <NavMain :items="data.navMain" />
+      <NavMain :items="data.navMain">
+        <template #sidebarItems>
+          <SidebarMenuItem>
+            <SidebarMenuButton class="!p-0 ">
+              <router-link to="/" :class="{ 'bg-[color-mix(in_oklab,var(--ring)_50%,transparent)]': $route.path === '/' }" class="flex items-center gap-2 p-2 w-full" >
+                <PieChart class="h-5 w-5" />
+                <span>stats</span>
+              </router-link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </template>
+      </NavMain>
       <!-- <NavProjects :projects="data.projects" /> -->
     </SidebarContent>
     <SidebarFooter>

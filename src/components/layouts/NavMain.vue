@@ -35,6 +35,7 @@ defineProps<{
   <SidebarGroup>
     <SidebarGroupLabel>Platform</SidebarGroupLabel>
     <SidebarMenu>
+      <slot name="sidebarItems" />
       <Collapsible
         v-for="item in items"
         :key="item.title"
@@ -54,7 +55,7 @@ defineProps<{
             <SidebarMenuSub>
               <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
                 <SidebarMenuSubButton as-child>
-                  <router-link  :to="subItem.url" >
+                  <router-link :class="{ 'bg-[color-mix(in_oklab,var(--ring)_50%,transparent)]': $route.path === subItem.url }" :to="subItem.url" >
                     <span>{{ subItem.title }}</span>
                   </router-link>
                 </SidebarMenuSubButton>

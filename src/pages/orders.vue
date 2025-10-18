@@ -36,7 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import DropdownAction from "./DataTableDemoColumn.vue"
+import DropdownAction from "~/components/section/DataTableDemoColumn.vue"
 
 export interface Payment {
   id: string
