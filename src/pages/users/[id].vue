@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUsers } from "~/composable/useUsers";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ArrowLeft, Pencil, Trash2, Mail, Phone, Calendar, User as UserIcon } from "lucide-vue-next";
 
 const route = useRoute();
@@ -12,6 +20,8 @@ const router = useRouter();
 const { selectedUser, loading, getUserById, deleteUser } = useUsers();
 
 const userId = computed(() => route.params.id as string);
+const showDeleteDialog = ref(false);
+const deleting = ref(false);
 
 onMounted(async () => {
   if (userId.value) {
@@ -23,10 +33,20 @@ const handleEdit = () => {
   router.push(`/users/${userId.value}/edit`);
 };
 
-const handleDelete = async () => {
-  if (confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+const handleDelete = () => {
+  showDeleteDialog.value = true;
+};
+
+const confirmDelete = async () => {
+  deleting.value = true;
+  try {
     await deleteUser(userId.value);
     router.push("/users");
+  } catch (error) {
+    console.error("Failed to delete user:", error);
+  } finally {
+    deleting.value = false;
+    showDeleteDialog.value = false;
   }
 };
 
@@ -220,5 +240,42 @@ const getStatusColor = (status: string) => {
         </Button>
       </CardContent>
     </Card>
+
+    <!-- Delete Confirmation Dialog -->
+    <Dialog v-model:open="showDeleteDialog">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete User</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete this user? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div v-if="selectedUser" class="py-4">
+          <div class="flex items-center gap-3 p-3 bg-muted rounded-lg">
+            <div v-if="selectedUser.avatar" class="w-12 h-12 rounded-full overflow-hidden">
+              <img :src="selectedUser.avatar" :alt="selectedUser.name" class="w-full h-full object-cover" />
+            </div>
+            <div v-else class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <span class="text-lg font-bold text-primary">
+                {{ selectedUser.name.charAt(0).toUpperCase() }}
+              </span>
+            </div>
+            <div>
+              <p class="font-semibold">{{ selectedUser.name }}</p>
+              <p class="text-sm text-muted-foreground">{{ selectedUser.email }}</p>
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" @click="showDeleteDialog = false" :disabled="deleting">
+            Cancel
+          </Button>
+          <Button variant="destructive" @click="confirmDelete" :disabled="deleting">
+            <Trash2 class="h-4 w-4 mr-2" />
+            {{ deleting ? "Deleting..." : "Delete User" }}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

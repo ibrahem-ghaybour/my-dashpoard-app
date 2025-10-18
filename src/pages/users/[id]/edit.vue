@@ -15,6 +15,9 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Save } from "lucide-vue-next";
+import { InputDate } from "@/components/ui/date";
+import type { DateValue } from "@internationalized/date";
+import { parseDate } from "@internationalized/date";
 
 const route = useRoute();
 const router = useRouter();
@@ -30,9 +33,10 @@ const formData = ref({
   role: "",
   status: "",
   gender: "",
-  birthdate: "",
   avatar: "",
 });
+
+const birthdateValue = ref<DateValue>();
 
 const saving = ref(false);
 
@@ -47,11 +51,14 @@ onMounted(async () => {
         role: selectedUser.value.role,
         status: selectedUser.value.status,
         gender: selectedUser.value.gender || "",
-        birthdate: selectedUser.value.birthdate
-          ? new Date(selectedUser.value.birthdate).toISOString().split("T")[0]
-          : "",
         avatar: selectedUser.value.avatar || "",
       };
+      
+      // Parse birthdate to DateValue
+      if (selectedUser.value.birthdate) {
+        const dateStr = new Date(selectedUser.value.birthdate).toISOString().split("T")[0];
+        birthdateValue.value = parseDate(dateStr);
+      }
     }
   }
 });
@@ -70,8 +77,8 @@ const handleSubmit = async () => {
     if (formData.value.gender) {
       updateData.gender = formData.value.gender;
     }
-    if (formData.value.birthdate) {
-      updateData.birthdate = formData.value.birthdate;
+    if (birthdateValue.value) {
+      updateData.birthdate = birthdateValue.value.toString();
     }
     if (formData.value.avatar) {
       updateData.avatar = formData.value.avatar;
@@ -197,10 +204,9 @@ const handleCancel = () => {
               <Label for="gender">Gender</Label>
               <Select v-model="formData.gender">
                 <SelectTrigger>
-                  <SelectValue placeholder="Select gender" />
+                  <SelectValue placeholder="Not specified" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Not specified</SelectItem>
                   <SelectItem value="male">Male</SelectItem>
                   <SelectItem value="female">Female</SelectItem>
                 </SelectContent>
@@ -210,11 +216,7 @@ const handleCancel = () => {
             <!-- Birthdate -->
             <div class="space-y-2">
               <Label for="birthdate">Birthdate</Label>
-              <Input
-                id="birthdate"
-                type="date"
-                v-model="formData.birthdate"
-              />
+              <InputDate v-model="birthdateValue" />
             </div>
 
             <!-- Avatar URL -->
