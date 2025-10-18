@@ -106,7 +106,7 @@ const data = {
         },
         {
           title: "Wishlist",
-          url: "#",
+          url: "/wishlist",
         },
         {
           title: "Tutorials",
