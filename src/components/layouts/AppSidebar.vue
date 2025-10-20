@@ -6,16 +6,12 @@ import {
   BookOpen,
   Bot,
   Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
   PieChart,
   Settings2,
   SquareTerminal,
 } from "lucide-vue-next"
 import NavMain from '@/components/layouts/NavMain.vue'
-// D:\shadcd-vue\my-vue-app\src\components\layouts\NavMain.vue
-import NavProjects from '@/components/layouts/NavProjects.vue'
 import NavUser from '@/components/layouts/NavUser.vue'
 import TeamSwitcher from '@/components/layouts/TeamSwitcher.vue'
 
@@ -60,6 +56,12 @@ const data = {
     },
   ],
   navMain: [
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: PieChart,
+      isActive: true,
+    },
     {
       title: "Sales",
       url: "#",
@@ -218,16 +220,16 @@ const data = {
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain">
-        <template #sidebarItems>
+        <!-- <template #sidebarItems>
           <SidebarMenuItem>
             <SidebarMenuButton class="!p-0 ">
               <router-link to="/" :class="{ 'bg-[color-mix(in_oklab,var(--ring)_50%,transparent)]': $route.path === '/' }" class="flex items-center gap-2 p-2 w-full" >
-                <PieChart class="h-5 w-5" />
+                <PieChart class="h-4 w-4" />
                 <span>stats</span>
               </router-link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-        </template>
+        </template> -->
       </NavMain>
       <!-- <NavProjects :projects="data.projects" /> -->
     </SidebarContent>

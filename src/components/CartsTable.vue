@@ -497,7 +497,7 @@ const emit = defineEmits<{
           </template>
 
           <TableRow v-else>
-            <TableCell :colspan="columns.length" class="h-24 text-center">
+            <TableCell :colspan="columns.length" class="h-26 text-center">
               No results.
             </TableCell>
           </TableRow>
