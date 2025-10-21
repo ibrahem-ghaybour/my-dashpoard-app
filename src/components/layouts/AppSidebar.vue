@@ -120,76 +120,24 @@ const data = {
         },
       ],
     },
-    {
-      title: "Locations",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Governorates",
-          url: "#",
-        },
-        {
-          title: "Cities",
-          url: "#",
-        },
-        {
-          title: "Addresses",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Support",
-      url: "#",
-      icon: PieChart,
-      items: [
-        {
-          title: "Requests",
-          url: "#",
-        },
-        {
-          title: "FAQs",
-          url: "#",
-        },
-        {
-          title: "Contact",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: Command,
-      items: [
-        {
-          title: "Stats",
-          url: "#",
-        },
-        {
-          title: "Reports",
-          url: "#",
-        },
-      ],
-    },
+  
     {
       title: "Settings",
       url: "#",
       icon: AudioWaveform,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "governorates",
+          url: "/settings/governorates",
         },
         {
-          title: "Localization & Currency",
-          url: "#",
+          title: "Currency",
+          url: "/settings/currency",
         },
-        {
-          title: "Roles & Permissions",
-          url: "#",
-        },
+        // {
+        //   title: "Roles & Permissions",
+        //   url: "#",
+        // },
       ],
     },
   ],

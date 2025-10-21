@@ -85,6 +85,24 @@ const routes = [
         component: () => import('~/pages/categories/index.vue'),
         meta: { requiresAuth: true, allowedRoles: ['admin', 'manager'] }
       },
+      { 
+        path: 'settings/currency', 
+        name: 'currency-settings', 
+        component: () => import('~/pages/settings/currency.vue'),
+        meta: { requiresAuth: true, allowedRoles: ['admin', 'manager'] }
+      },
+      { 
+        path: 'settings/governorates', 
+        name: 'governorates-settings', 
+        component: () => import('~/pages/settings/governorates.vue'),
+        meta: { requiresAuth: true, allowedRoles: ['admin', 'manager'] }
+      },
+      { 
+        path: 'settings/governorates/:id', 
+        name: 'governorate-details', 
+        component: () => import('~/pages/settings/governorates/[id].vue'),
+        meta: { requiresAuth: true, allowedRoles: ['admin', 'manager'] }
+      },
     ],
   },
   {
