@@ -259,20 +259,20 @@ const searchValue = ref("");
 
 const handleSearchChange = (value: string | number) => {
   const stringValue = String(value);
-  searchValue.value = value;
+  searchValue.value = stringValue;
   // Clear all search filters first
   table.getColumn("userName")?.setFilterValue(undefined);
   table.getColumn("userEmail")?.setFilterValue(undefined);
   table.getColumn("orderCode")?.setFilterValue(undefined);
   
   // Set filter on the appropriate column based on search type
-  if (value) {
+  if (stringValue) {
     if (searchType.value === "name") {
-      table.getColumn("userName")?.setFilterValue(value);
+      table.getColumn("userName")?.setFilterValue(stringValue);
     } else if (searchType.value === "email") {
-      table.getColumn("userEmail")?.setFilterValue(value);
+      table.getColumn("userEmail")?.setFilterValue(stringValue);
     } else if (searchType.value === "id") {
-      table.getColumn("orderCode")?.setFilterValue(value);
+      table.getColumn("orderCode")?.setFilterValue(stringValue);
     }
   }
 };

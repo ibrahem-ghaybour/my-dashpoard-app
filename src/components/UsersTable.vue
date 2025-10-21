@@ -23,7 +23,6 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -242,16 +241,17 @@ const totalItems = computed(() => props.pagination.total);
 const searchType = ref<"name" | "email">("name");
 const searchValue = ref("");
 
-const handleSearchChange = (value: string) => {
-  searchValue.value = value;
+const handleSearchChange = (value: string | number) => {
+  const stringValue = String(value);
+  searchValue.value = stringValue;
   table.getColumn("name")?.setFilterValue(undefined);
   table.getColumn("email")?.setFilterValue(undefined);
 
-  if (value) {
+  if (stringValue) {
     if (searchType.value === "name") {
-      table.getColumn("name")?.setFilterValue(value);
+      table.getColumn("name")?.setFilterValue(stringValue);
     } else if (searchType.value === "email") {
-      table.getColumn("email")?.setFilterValue(value);
+      table.getColumn("email")?.setFilterValue(stringValue);
     }
   }
 };

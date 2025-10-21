@@ -91,10 +91,7 @@ const data = {
           title: "Categories",
           url: "/categories",
         },
-        {
-          title: "Quantum",
-          url: "/quantum",
-        },
+
       ],
     },
     {
@@ -110,14 +107,7 @@ const data = {
           title: "Wishlist",
           url: "/wishlist",
         },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
+
       ],
     },
   

@@ -61,7 +61,7 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const selectedRows = ref<Record<string, boolean>>({});
+// const selectedRows = ref<Record<string, boolean>>({});
 
 const columns: ColumnDef<ProductFromOrder>[] = [
   {
