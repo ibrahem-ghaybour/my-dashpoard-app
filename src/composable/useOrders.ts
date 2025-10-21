@@ -15,6 +15,7 @@ export function useOrders() {
   const orderList = ref<OrderData[]>([]);
   const selectedOrder = ref<OrderData | null>(null);
   const users = ref<UserO[]>([]);
+  const error = ref<string | null>(null);
 
   const { pagination, filterOptions, loading, search } = useInitialise();
 
@@ -23,12 +24,12 @@ export function useOrders() {
     users.value = response.data.map((order) => {
       return {
         ...order.user,
-        status: order.status,
+        status: order.status || 'pending',
         amount: order.totalAmount,
-        orderCode: order.orderCode,
+        orderCode: order.orderCode || '',
         createdAt: order.createdAt,
         orderId: order._id,
-      };
+      } as UserO;
     });
   };
   const fetchData = async () => {
@@ -51,10 +52,10 @@ export function useOrders() {
       }
       usersOrders(response);
       if (!response.success) {
-        throw err;
+        throw new Error('Failed to fetch orders');
       }
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || 'Failed to fetch orders');
       throw err;
     } finally {
       loading.value = false;
@@ -75,8 +76,8 @@ export function useOrders() {
       if (!selectedOrder.value) {
         error.value = "Order not found";
       }
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || 'Failed to fetch order');
       throw err;
     } finally {
       loading.value = false;
@@ -95,8 +96,8 @@ export function useOrders() {
       }
       await fetchData();
       useToastTheme.success("Orders deleted successfully");
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || 'Failed to delete orders');
       throw err;
     } finally {
       loading.value = false;
@@ -111,14 +112,12 @@ export function useOrders() {
         body: { orderIds: ids, status },
       });
       if (!response.success) {
-        error.value = "Failed to update orders";
         throw new Error("Failed to update orders");
       }
-      // fetchData();
       useToastTheme.success("Orders updated successfully");
       return response.data;
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || 'Failed to update orders');
       throw err;
     } finally {
       loading.value = false;
@@ -155,10 +154,57 @@ export function useOrders() {
     pagination.value.limit = limit;
     fetchData();
   };
+  
+  const createOrder = async (orderData: any) => {
+    loading.value = true;
+
+    try {
+      const response = await api<any>("/orders", {
+        method: "POST",
+        body: orderData,
+      });
+      if (!response.success) {
+        throw new Error("Failed to create order");
+      }
+      useToastTheme.success("Order created successfully");
+      return response.data;
+    } catch (err: any) {
+      useToastTheme.error(err?.message || 'Failed to create order');
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+  
+  const fetchUserOrders = async (userId: string) => {
+    loading.value = true;
+
+    try {
+      const response = await api<OrderResponse>("/orders", {
+        method: "GET",
+        params: {
+          userId: userId,
+          page: 1,
+          limit: 100,
+        },
+      });
+      if (!response.success) {
+        throw new Error("Failed to fetch user orders");
+      }
+      return response.data;
+    } catch (err: any) {
+      useToastTheme.error(err?.message || 'Failed to fetch user orders');
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+  
   return {
     orderList,
     selectedOrder,
     loading,
+    error,
     pagination,
     users,
     search,
@@ -167,8 +213,11 @@ export function useOrders() {
     fetchById,
     updateBulk,
     deleteOrders,
+    createOrder,
+    fetchUserOrders,
     nextPage,
     prevPage,
+    firstPage,
     lastPage,
     goToPage,
     limitSize,

@@ -2,6 +2,7 @@
 import { onMounted, computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUsers } from "~/composable/useUsers";
+import { useOrders } from "~/composable/useOrders";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,21 +14,37 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowLeft, Pencil, Trash2, Mail, Phone, Calendar, User as UserIcon } from "lucide-vue-next";
+import { ArrowLeft, Pencil, Trash2, Mail, Phone, Calendar, User as UserIcon, ShoppingCart, Package, Eye } from "lucide-vue-next";
+import type { OrderData } from "~/types/orders";
 
 const route = useRoute();
 const router = useRouter();
 const { selectedUser, loading, getUserById, deleteUser } = useUsers();
+const { fetchUserOrders } = useOrders();
 
 const userId = computed(() => route.params.id as string);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
+const userOrders = ref<OrderData[]>([]);
+const ordersLoading = ref(false);
 
 onMounted(async () => {
   if (userId.value) {
     await getUserById(userId.value);
+    await loadUserOrders();
   }
 });
+
+const loadUserOrders = async () => {
+  ordersLoading.value = true;
+  try {
+    userOrders.value = await fetchUserOrders(userId.value);
+  } catch (error) {
+    console.error("Failed to load user orders:", error);
+  } finally {
+    ordersLoading.value = false;
+  }
+};
 
 const handleEdit = () => {
   router.push(`/users/${userId.value}/edit`);
@@ -78,6 +95,28 @@ const getStatusColor = (status: string) => {
   };
   return colors[status as keyof typeof colors] || "bg-gray-500/10 text-gray-500 border-gray-500/20";
 };
+
+const getOrderStatusColor = (status: string) => {
+  const colors = {
+    pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+    processing: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    shipped: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+    delivered: "bg-green-500/10 text-green-500 border-green-500/20",
+    cancelled: "bg-red-500/10 text-red-500 border-red-500/20",
+  };
+  return colors[status as keyof typeof colors] || "bg-gray-500/10 text-gray-500 border-gray-500/20";
+};
+
+const formatCurrency = (amount: number, currency: string = "USD") => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency,
+  }).format(amount);
+};
+
+const totalOrderValue = computed(() => {
+  return userOrders.value.reduce((sum, order) => sum + order.totalAmount, 0);
+});
 </script>
 
 <template>
@@ -226,6 +265,79 @@ const getStatusColor = (status: string) => {
                 <p class="text-base font-medium">{{ formatDate(selectedUser.updatedAt) }}</p>
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- User Orders -->
+      <Card class="md:col-span-3">
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <div>
+              <CardTitle class="flex items-center gap-2">
+                <ShoppingCart class="h-5 w-5" />
+                Order History
+              </CardTitle>
+              <CardDescription>All orders placed by this user</CardDescription>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <p class="text-sm text-muted-foreground">Total Orders</p>
+                <p class="text-2xl font-bold">{{ userOrders.length }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-muted-foreground">Total Value</p>
+                <p class="text-2xl font-bold">{{ formatCurrency(totalOrderValue) }}</p>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <!-- Loading State -->
+          <div v-if="ordersLoading" class="space-y-3">
+            <Skeleton class="h-20 w-full" />
+            <Skeleton class="h-20 w-full" />
+            <Skeleton class="h-20 w-full" />
+          </div>
+
+          <!-- Orders List -->
+          <div v-else-if="userOrders.length > 0" class="space-y-3">
+            <div 
+              v-for="order in userOrders" 
+              :key="order._id"
+              class="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+              @click="router.push(`/orders/${order._id}`)"
+            >
+              <div class="flex items-center gap-4">
+                <div class="p-3 bg-primary/10 rounded-lg">
+                  <Package class="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <p class="font-semibold">Order {{ order.orderCode || order._id.slice(-8).toUpperCase() }}</p>
+                  <p class="text-sm text-muted-foreground">{{ formatDate(order.createdAt) }}</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <div :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border capitalize ${getOrderStatusColor(order.status || 'pending')}`">
+                      {{ order.status || 'pending' }}
+                    </div>
+                    <span class="text-xs text-muted-foreground">{{ order.items.length }} item(s)</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="text-right">
+                  <p class="text-lg font-bold">{{ formatCurrency(order.totalAmount, order.currency) }}</p>
+                </div>
+                <Button variant="ghost" size="icon">
+                  <Eye class="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else class="py-10 text-center">
+            <Package class="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+            <p class="text-muted-foreground">No orders found for this user</p>
           </div>
         </CardContent>
       </Card>

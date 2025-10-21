@@ -14,9 +14,10 @@ import {
   getSortedRowModel,
   useVueTable,
 } from "@tanstack/vue-table";
-import { ArrowUpDown, ChevronDown } from "lucide-vue-next";
+import { ArrowUpDown, ChevronDown, Plus } from "lucide-vue-next";
+import { useRouter } from "vue-router";
 
-import { h, ref, computed as comp } from "vue";
+import { h, ref } from "vue";
 import { valueUpdater } from "@/components/ui/table/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -50,6 +51,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const router = useRouter();
 
 const columns: ColumnDef<OrderData>[] = [
   {
@@ -184,11 +187,15 @@ const columns: ColumnDef<OrderData>[] = [
           payment: { id: payment._id },
           actions: [
             {
+              label: "View Order Details",
+              action: () => router.push(`/orders/${payment._id}`),
+            },
+            {
               label: "Copy Order ID",
               action: () => navigator.clipboard.writeText(payment.orderCode || payment._id),
             },
             {
-              label: "View Details",
+              label: "Expand Details",
               action: () => row.toggleExpanded(),
             },
           ],
@@ -250,7 +257,8 @@ const totalItems = computed(() => props.pagination.total);
 const searchType = ref<"name" | "email" | "id">("name");
 const searchValue = ref("");
 
-const handleSearchChange = (value: string) => {
+const handleSearchChange = (value: string | number) => {
+  const stringValue = String(value);
   searchValue.value = value;
   // Clear all search filters first
   table.getColumn("userName")?.setFilterValue(undefined);
@@ -339,6 +347,10 @@ const emit = defineEmits<{
         />
       </div>
       <div class="flex gap-2 items-center">
+        <Button @click="router.push('/orders/create')">
+          <Plus class="h-4 w-4 mr-2" />
+          Create Order
+        </Button>
         <DropdownMenu
           v-if="table.getFilteredSelectedRowModel().rows.length > 0"
         >

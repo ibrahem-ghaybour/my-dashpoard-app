@@ -20,6 +20,18 @@ const routes = [
         meta: { requiresAuth: true, allowedRoles: ['admin', 'manager'] }
       },
       { 
+        path: 'orders/create', 
+        name: 'order-create', 
+        component: () => import('~/pages/orders/create.vue'),
+        meta: { requiresAuth: true, allowedRoles: ['admin', 'manager'] }
+      },
+      { 
+        path: 'orders/:id', 
+        name: 'order-details', 
+        component: () => import('~/pages/orders/[id].vue'),
+        meta: { requiresAuth: true, allowedRoles: ['admin', 'manager'] }
+      },
+      { 
         path: 'carts', 
         name: 'carts', 
         component: () => import('~/pages/carts.vue'),
