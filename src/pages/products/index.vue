@@ -187,9 +187,9 @@ const formatPrice = (price: number) => {
         <h1 class="text-3xl font-bold">Products</h1>
         <p class="text-muted-foreground">Product sales analytics and performance</p>
       </div>
-      <Button @click="handleCreate">
+      <Button @click="router.push('/products/new')">
         <Plus class="h-4 w-4 mr-2" />
-        Create Product
+        Add Product
       </Button>
     </div>
 

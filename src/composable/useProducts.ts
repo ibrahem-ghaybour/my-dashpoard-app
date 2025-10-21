@@ -26,6 +26,8 @@ export interface ProductDetail {
   } | string;
   stock: number;
   image?: string;
+  images: string[];
+  primaryImage: string;
   isActive: boolean;
   createdBy?: {
     _id: string;

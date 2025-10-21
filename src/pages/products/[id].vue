@@ -84,7 +84,9 @@ const getCategoryName = (category: any) => {
         </div>
       </div>
       <div v-if="selectedProduct" class="flex gap-2">
-    
+        <Button @click="router.push(`/products/${productId}/edit`)">
+          Edit Product
+        </Button>
         <Button variant="destructive" @click="handleDelete">
           <Trash2 class="h-4 w-4 mr-2" />
           Delete
@@ -115,13 +117,32 @@ const getCategoryName = (category: any) => {
           <CardDescription>Basic product details</CardDescription>
         </CardHeader>
         <CardContent class="space-y-6">
-          <!-- Product Image -->
-          <div v-if="selectedProduct.image" class="aspect-video relative overflow-hidden rounded-lg bg-muted">
-            <img
-              :src="selectedProduct.image"
-              :alt="selectedProduct.name"
-              class="w-full h-full object-cover"
-            />
+          <!-- Product Images Gallery -->
+          <div v-if="selectedProduct.images && selectedProduct.images.length > 0" class="space-y-4">
+            <!-- Primary Image -->
+            <div class="aspect-video relative overflow-hidden rounded-lg bg-muted">
+              <img
+                :src="selectedProduct.primaryImage || selectedProduct.images[0]"
+                :alt="selectedProduct.name"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            
+            <!-- Thumbnail Images -->
+            <div v-if="selectedProduct.images.length > 1" class="grid grid-cols-4 gap-2">
+              <div
+                v-for="(image, index) in selectedProduct.images"
+                :key="index"
+                class="aspect-square relative overflow-hidden rounded-lg bg-muted cursor-pointer border-2 hover:border-primary transition-colors"
+                :class="{ 'border-primary': image === selectedProduct.primaryImage }"
+              >
+                <img
+                  :src="image"
+                  :alt="`${selectedProduct.name} ${index + 1}`"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+            </div>
           </div>
           <div v-else class="aspect-video relative overflow-hidden rounded-lg bg-muted flex items-center justify-center">
             <ImageIcon class="h-24 w-24 text-muted-foreground" />

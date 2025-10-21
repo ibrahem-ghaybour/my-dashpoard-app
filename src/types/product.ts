@@ -4,7 +4,9 @@ export interface Product {
   _id: string;
   name: string;
   description: string;
-  image: string;
+  image?: string; // deprecated, use images array
+  images: string[];
+  primaryImage: string;
   price: number;
   category: {
     _id: string;
