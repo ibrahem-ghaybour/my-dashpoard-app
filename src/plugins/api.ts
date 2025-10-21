@@ -89,7 +89,7 @@ export const createApiPlugin = (opts: ApiPluginOptions): Plugin => {
         },
 
         async onResponseError({ request, response, options }) {
-          const auth = useAuthStore();
+          // const auth = useAuthStore();
 
           if (
             response?.status === 401 &&

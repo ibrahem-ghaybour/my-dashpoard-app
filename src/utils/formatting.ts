@@ -16,10 +16,10 @@ export const formattedDateTime = (dateStr: string|Date): string => {
   });
 };
 
-export const formattedCurrency = (amount: number): string => {
+export const formattedCurrency = (amount: number, currency: string = "USD"): string => {
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: useRuntimeConfig().public.currency,
+    currency: currency,
   });
   return formatter.format(amount);
 };

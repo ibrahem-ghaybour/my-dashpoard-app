@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowLeft, Pencil, Trash2, Package, DollarSign, Box, Tag, Image as ImageIcon } from "lucide-vue-next";
+import { ArrowLeft, Trash2, Package, DollarSign, Box, Tag, Image as ImageIcon } from "lucide-vue-next";
 
 const route = useRoute();
 const router = useRouter();

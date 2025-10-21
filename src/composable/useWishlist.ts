@@ -47,8 +47,8 @@ export function useWishlist() {
         hasNext: response.page < response.totalPages,
         hasPrev: response.page > 1,
       };
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "Failed to fetch wishlist");
       throw err;
     } finally {
       loading.value = false;
@@ -69,8 +69,8 @@ export function useWishlist() {
         error.value = "Wishlist not found";
       }
       return selectedWishlist.value;
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "Failed to fetch wishlist");
       throw err;
     } finally {
       loading.value = false;
@@ -90,8 +90,8 @@ export function useWishlist() {
       useToastTheme.success("Item removed from wishlist");
       // Refresh the wishlist
       await getWishlistByUserId(userId);
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "Failed to delete item");
       throw err;
     } finally {
       loading.value = false;
@@ -109,9 +109,10 @@ export function useWishlist() {
         throw new Error("Failed to clear wishlist");
       }
       await fetchData();
-      useToastTheme.success("Wishlist cleared successfully");
-    } catch (err) {
-      useToastTheme.error(err);
+      useToastTheme.success("Wishlist cleared");
+      await fetchData();
+    } catch (err: any) {
+      useToastTheme.error((err as any)?.message || "Failed to clear wishlist");
       throw err;
     } finally {
       loading.value = false;

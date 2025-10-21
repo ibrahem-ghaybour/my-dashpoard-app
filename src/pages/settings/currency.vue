@@ -21,8 +21,8 @@ const saving = ref(false);
 
 onMounted(async () => {
   await fetchData();
-  if (currencyList.value && currencyList.value.length > 0) {
-    currentCurrency.value = currencyList.value[0].currency;
+  if (currencyList.value && currencyList.value.length > 0 && currencyList.value[0]) {
+    currentCurrency.value = currencyList.value[0]?.currency || "";
   }
 });
 
@@ -32,8 +32,8 @@ const handleEdit = () => {
 
 const handleCancel = () => {
   isEditing.value = false;
-  if (currencyList.value && currencyList.value.length > 0) {
-    currentCurrency.value = currencyList.value[0].currency;
+  if (currencyList.value && currencyList.value.length > 0 && currencyList.value[0]) {
+    currentCurrency.value = currencyList.value[0]?.currency || "";
   }
 };
 
@@ -45,8 +45,8 @@ const handleSave = async () => {
     await createCurrency({ currency: currentCurrency.value.toUpperCase() });
     isEditing.value = false;
     await fetchData();
-    if (currencyList.value && currencyList.value.length > 0) {
-      currentCurrency.value = currencyList.value[0].currency;
+    if (currencyList.value && currencyList.value.length > 0 && currencyList.value[0]) {
+      currentCurrency.value = currencyList.value[0]?.currency || "";
     }
   } catch (error) {
     console.error("Failed to update currency:", error);

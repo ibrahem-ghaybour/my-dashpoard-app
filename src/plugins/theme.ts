@@ -11,7 +11,7 @@ export interface ThemePluginOptions {
 }
 
 export const ThemePlugin: Plugin = {
-  install(app: App, opts: ThemePluginOptions = {}) {
+  install(_app: App, opts: ThemePluginOptions = {}) {
     const key = opts.key ?? "theme";
     const maxAge = opts.maxAge ?? 60 * 60 * 24 * 365;
     const cookies = useCookies();

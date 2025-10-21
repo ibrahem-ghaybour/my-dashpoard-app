@@ -57,7 +57,7 @@ onMounted(async () => {
       // Parse birthdate to DateValue
       if (selectedUser.value.birthdate) {
         const dateStr = new Date(selectedUser.value.birthdate).toISOString().split("T")[0];
-        birthdateValue.value = parseDate(dateStr);
+        birthdateValue.value = parseDate(dateStr as string);
       }
     }
   }
@@ -84,7 +84,9 @@ const handleSubmit = async () => {
       updateData.avatar = formData.value.avatar;
     }
 
-    await updateUser(userId.value, updateData);
+    if (userId.value) {
+      await updateUser(userId.value, updateData);
+    }
     router.push(`/users/${userId.value}`);
   } catch (error) {
     console.error("Failed to update user:", error);

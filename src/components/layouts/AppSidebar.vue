@@ -172,7 +172,7 @@ const data = {
       <!-- <NavProjects :projects="data.projects" /> -->
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="authStore.currentUser" />
+      <NavUser v-if="authStore.currentUser" :user="authStore.currentUser" />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

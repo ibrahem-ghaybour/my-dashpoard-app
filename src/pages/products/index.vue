@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import { useProducts } from "~/composable/useProducts";
 import { useCategories } from "~/composable/useCategories";
 import ProductsTable from "~/components/ProductsTable.vue";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, TrendingUp, ShoppingCart, DollarSign, Trash2, Plus } from "lucide-vue-next";
 import { computed } from "vue";
 import {

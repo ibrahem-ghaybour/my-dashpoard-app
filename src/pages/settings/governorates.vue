@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useGovernorate } from "~/composable/useGovernorate";
-import { useCity } from "~/composable/useCity";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, MapPin, Building2, Eye, ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { Plus, Pencil, Trash2, MapPin, Eye, ChevronLeft, ChevronRight } from "lucide-vue-next";
 import type { Governorate, GovernorateCreatePayload, GovernorateUpdatePayload } from "~/types/governorate";
 
 const router = useRouter();
@@ -44,10 +43,8 @@ const {
   createGovernorate,
   updateGovernorate,
   deleteGovernorate,
-  goToPage,
   nextPage,
   prevPage,
-  limitSize,
 } = useGovernorate();
 
 const showCreateDialog = ref(false);

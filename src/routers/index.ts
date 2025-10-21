@@ -138,7 +138,7 @@ router.beforeEach(async (to, _from, next) => {
   if (authStore.isAuthenticated && !authStore.currentUser) {
     try {
       await authStore.fetchMe();
-    } catch (error) {
+    } catch (_error) {
       // If fetch fails, clear auth and redirect to login
       authStore.setAccessToken(null);
       authStore.currentUser = null;

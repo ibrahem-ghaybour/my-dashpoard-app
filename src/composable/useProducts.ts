@@ -27,6 +27,11 @@ export interface ProductDetail {
   stock: number;
   image?: string;
   isActive: boolean;
+  createdBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -117,8 +122,8 @@ export function useProducts() {
         hasNext: pagination.value.page < Math.ceil(totalProducts / pagination.value.limit),
         hasPrev: pagination.value.page > 1,
       };
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "An error occurred");
       throw err;
     } finally {
       loading.value = false;
@@ -164,8 +169,8 @@ export function useProducts() {
         error.value = "Product not found";
       }
       return selectedProduct.value;
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "An error occurred");
       throw err;
     } finally {
       loading.value = false;
@@ -186,8 +191,8 @@ export function useProducts() {
       useToastTheme.success("Product created successfully");
       await fetchData();
       return response.data;
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "An error occurred");
       throw err;
     } finally {
       loading.value = false;
@@ -208,8 +213,8 @@ export function useProducts() {
       useToastTheme.success("Product updated successfully");
       await fetchData();
       return response.data;
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "An error occurred");
       throw err;
     } finally {
       loading.value = false;
@@ -228,8 +233,8 @@ export function useProducts() {
       }
       useToastTheme.success("Product deleted successfully");
       await fetchData();
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "An error occurred");
       throw err;
     } finally {
       loading.value = false;
@@ -249,8 +254,8 @@ export function useProducts() {
       }
       useToastTheme.success(`${ids.length} product(s) deleted successfully`);
       await fetchData();
-    } catch (err) {
-      useToastTheme.error(err);
+    } catch (err: any) {
+      useToastTheme.error(err?.message || "An error occurred");
       throw err;
     } finally {
       loading.value = false;
