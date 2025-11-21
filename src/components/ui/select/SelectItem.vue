@@ -6,7 +6,6 @@ import { Check } from "lucide-vue-next"
 import {
   SelectItem,
   SelectItemIndicator,
-
   SelectItemText,
   useForwardProps,
 } from "reka-ui"
@@ -32,7 +31,9 @@ const forwardedProps = useForwardProps(delegatedProps)
   >
     <span class="absolute right-2 flex size-3.5 items-center justify-center">
       <SelectItemIndicator>
-        <Check class="size-4" />
+        <slot name="indicator-icon">
+          <Check class="size-4" />
+        </slot>
       </SelectItemIndicator>
     </span>
 
